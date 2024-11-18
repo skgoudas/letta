@@ -1,0 +1,28 @@
+.agents-list-container {
+    padding: 20px;
+  }
+  
+  input[type="text"] {
+    margin: 10px 0;
+    padding: 5px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  button {
+    padding: 5px 10px;
+  }
+  
