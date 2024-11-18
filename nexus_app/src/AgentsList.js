@@ -14,6 +14,8 @@ function AgentsList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [showInternalMonologue, setShowInternalMonologue] = useState(true);
+  const [showFunctionCalls, setShowFunctionCalls] = useState(true);
 
   const messageStyles = {
     function_call: {
@@ -75,7 +77,8 @@ function AgentsList() {
               id: msg.id,
               role: msg.role,
               text: displayText,
-              createdAt: createdAt
+              createdAt: createdAt,
+              type: msg.message_type
             };
           })
           .filter(msg => msg && msg.text) || []
@@ -283,10 +286,34 @@ function AgentsList() {
       >
         <h2>Chat with {agentName}</h2>
         <button onClick={closeModal}>Close</button>
+        <div className="message-toggles">
+          <label>
+            <input
+              type="checkbox"
+              checked={showInternalMonologue}
+              onChange={(e) => setShowInternalMonologue(e.target.checked)}
+            />
+            Show Internal Thoughts
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={showFunctionCalls}
+              onChange={(e) => setShowFunctionCalls(e.target.checked)}
+            />
+            Show Function Calls
+          </label>
+        </div>
         <div className="messages">
-          {messages
-            .filter(msg => msg.role !== 'system')
-            .map(renderMessage)}
+        {messages
+          .filter(msg => msg.role !== 'system'  && msg.role !== 'tool')
+          .filter(msg => {
+            if (msg.type === 'internal_monologue' && !showInternalMonologue) return false;
+            if ((msg.type === 'function_call' || msg.type === 'function_return') && !showFunctionCalls) return false;
+            return true;
+          })
+          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+          .map(renderMessage)}
           {isStreaming && <div className="streaming-indicator">Processing...</div>}
         </div>
         <div className="input-area">
@@ -306,7 +333,7 @@ function AgentsList() {
             onClick={sendMessage}
             disabled={isStreaming || !inputValue.trim()}
           >
-            Send
+            Send      
           </button>
         </div>
       </Modal>
