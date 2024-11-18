@@ -145,20 +145,20 @@ def generate_schema_from_args_schema_v1(
     properties = {}
     required = []
     for field_name, field in args_schema.__fields__.items():
-        if field.type_ == str:
+        if field.annotation == str:
             field_type = "string"
-        elif field.type_ == int:
+        elif field.annotation == int:
             field_type = "integer"
-        elif field.type_ == bool:
+        elif field.annotation == bool:
             field_type = "boolean"
         else:
-            field_type = field.type_.__name__
+            field_type = field.annotation.__name__
 
         properties[field_name] = {
             "type": field_type,
-            "description": field.field_info.description,
+            "description": field.description,
         }
-        if field.required:
+        if field.is_required():
             required.append(field_name)
 
     function_call_json = {

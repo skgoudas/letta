@@ -128,7 +128,10 @@ class ChromaStorageConnector(StorageConnector):
         if limit:
             results = self.collection.get(ids=ids, include=self.include, where=filters, limit=limit)
         else:
-            results = self.collection.get(ids=ids, include=self.include, where=filters)
+            if ids:
+                results = self.collection.get(ids=ids, include=self.include, where=filters)
+            else:
+                return []
         return self.results_to_records(results)
 
     def get(self, id: str):
@@ -197,6 +200,8 @@ class ChromaStorageConnector(StorageConnector):
 
     def delete(self, filters: Optional[Dict] = {}):
         ids, filters = self.get_filters(filters)
+        if len(ids) == 0:
+            return
         self.collection.delete(ids=ids, where=filters)
 
     def delete_table(self):
